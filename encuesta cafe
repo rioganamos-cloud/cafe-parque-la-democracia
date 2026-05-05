@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Encuesta Café · Parque de la Democracia</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#f5f2ee;min-height:100vh;padding:2rem 1rem;color:#2c1a0e}
+.container{max-width:640px;margin:0 auto}
+.header{background:#2c1a0e;border-radius:16px;padding:2rem;margin-bottom:1.5rem}
+.badge{font-size:12px;color:#c9a96e;margin-bottom:12px;letter-spacing:.05em;display:block}
+h1{font-size:24px;font-weight:700;margin-bottom:12px;line-height:1.3;color:#fff}
+.intro{font-size:15px;color:#d4b896;line-height:1.7}
+.bloque{margin-bottom:1.5rem}
+.bloque-titulo{font-size:11px;font-weight:700;letter-spacing:.08em;color:#8b6f4e;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #ddd6cc}
+.pregunta{background:#fff;border-radius:12px;padding:1.25rem;margin-bottom:10px;border:1px solid #e8e2da}
+.pregunta p{font-size:15px;font-weight:600;margin-bottom:14px;line-height:1.5;color:#2c1a0e}
+label.opcion{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;cursor:pointer;font-size:14px;color:#4a3728;line-height:1.5}
+label.opcion input{margin-top:3px;accent-color:#8b6f4e;flex-shrink:0}
+textarea{width:100%;font-size:14px;color:#2c1a0e;border:1px solid #d4c9bc;border-radius:8px;padding:10px 12px;font-family:Georgia,serif;resize:vertical;outline:none;line-height:1.6;margin-top:4px}
+textarea:focus{border-color:#8b6f4e}
+.btn{display:block;width:100%;background:#2c1a0e;color:#fff;border:none;border-radius:10px;padding:1rem;font-size:16px;font-weight:700;cursor:pointer;margin-top:1rem;font-family:Georgia,serif;transition:opacity .2s}
+.btn:disabled{opacity:.6;cursor:default}
+.btn:hover:not(:disabled){opacity:.85}
+#error-msg{color:#c0392b;font-size:14px;text-align:center;margin-bottom:8px;display:none}
+.gracias{max-width:480px;margin:4rem auto;background:#fff;border-radius:16px;padding:3rem 2rem;text-align:center;border:1px solid #e8e2da;display:none}
+.check{font-size:48px;color:#5a8a5a;margin-bottom:16px}
+.gracias h2{font-size:22px;color:#2c1a0e;margin-bottom:12px}
+.gracias p{font-size:15px;color:#6b5a4a;line-height:1.7}
+</style>
+</head>
+<body>
+
+<div class="container" id="formulario">
+  <div class="header">
+    <span class="badge">☕ Resistencia, Chaco · Encuesta anónima</span>
+    <h1>¿Querés un café de especialidad en el parque?</h1>
+    <p class="intro">Estamos evaluando abrir un espacio de café en el Parque de la Democracia y queremos saber qué busca la gente de la zona. La encuesta es anónima y toma solo 4 minutos.</p>
+  </div>
+
+  <div class="bloque">
+    <div class="bloque-titulo">Perfil del encuestado</div>
+    <div class="pregunta">
+      <p>1. ¿Con qué frecuencia visitás el Parque de la Democracia?</p>
+      <label class="opcion"><input type="radio" name="frecuencia_parque" value="Todos los días o casi todos los días"> Todos los días o casi todos los días</label>
+      <label class="opcion"><input type="radio" name="frecuencia_parque" value="2 a 3 veces por semana"> 2 a 3 veces por semana</label>
+      <label class="opcion"><input type="radio" name="frecuencia_parque" value="Una vez por semana"> Una vez por semana</label>
+      <label class="opcion"><input type="radio" name="frecuencia_parque" value="Algunas veces por mes"> Algunas veces por mes</label>
+      <label class="opcion"><input type="radio" name="frecuencia_parque" value="Rara vez o nunca"> Rara vez o nunca</label>
+    </div>
+    <div class="pregunta">
+      <p>2. ¿Qué actividades realizás habitualmente en el parque? (Podés elegir varias)</p>
+      <label class="opcion"><input type="checkbox" name="actividades" value="Descanso / paseo tranquilo"> Descanso / paseo tranquilo</label>
+      <label class="opcion"><input type="checkbox" name="actividades" value="Actividad física (correr, yoga, etc.)"> Actividad física (correr, yoga, etc.)</label>
+      <label class="opcion"><input type="checkbox" name="actividades" value="Trabajo o estudio"> Trabajo o estudio</label>
+      <label class="opcion"><input type="checkbox" name="actividades" value="Reuniones sociales o familiares"> Reuniones sociales o familiares</label>
+      <label class="opcion"><input type="checkbox" name="actividades" value="Paso de camino (no me quedo)"> Paso de camino (no me quedo)</label>
+      <label class="opcion"><input type="checkbox" name="actividades" value="Otra"> Otra</label>
+    </div>
+    <div class="pregunta">
+      <p>3. ¿Cuál es tu franja horaria habitual de visita?</p>
+      <label class="opcion"><input type="radio" name="horario_visita" value="Mañana (7 a 12 h)"> Mañana (7 a 12 h)</label>
+      <label class="opcion"><input type="radio" name="horario_visita" value="Mediodía (12 a 15 h)"> Mediodía (12 a 15 h)</label>
+      <label class="opcion"><input type="radio" name="horario_visita" value="Tarde (15 a 19 h)"> Tarde (15 a 19 h)</label>
+      <label class="opcion"><input type="radio" name="horario_visita" value="Noche (19 h en adelante)"> Noche (19 h en adelante)</label>
+      <label class="opcion"><input type="radio" name="horario_visita" value="Varía según el día"> Varía según el día</label>
+    </div>
+  </div>
+
+  <div class="bloque">
+    <div class="bloque-titulo">Hábitos de consumo de café</div>
+    <div class="pregunta">
+      <p>4. ¿Con qué frecuencia consumís café fuera de tu casa?</p>
+      <label class="opcion"><input type="radio" name="frecuencia_cafe_fuera" value="Todos los días"> Todos los días</label>
+      <label class="opcion"><input type="radio" name="frecuencia_cafe_fuera" value="Varias veces por semana"> Varias veces por semana</label>
+      <label class="opcion"><input type="radio" name="frecuencia_cafe_fuera" value="Una vez por semana"> Una vez por semana</label>
+      <label class="opcion"><input type="radio" name="frecuencia_cafe_fuera" value="Menos de una vez por semana"> Menos de una vez por semana</label>
+      <label class="opcion"><input type="radio" name="frecuencia_cafe_fuera" value="No consumo café"> No consumo café</label>
+    </div>
+    <div class="pregunta">
+      <p>5. ¿Qué tipo de café pedís habitualmente? (Podés elegir varias)</p>
+      <label class="opcion"><input type="checkbox" name="tipos_cafe" value="Café con leche / cortado"> Café con leche / cortado</label>
+      <label class="opcion"><input type="checkbox" name="tipos_cafe" value="Espresso solo"> Espresso solo</label>
+      <label class="opcion"><input type="checkbox" name="tipos_cafe" value="Capuchino o latte"> Capuchino o latte</label>
+      <label class="opcion"><input type="checkbox" name="tipos_cafe" value="Café frío (cold brew, frappé, etc.)"> Café frío (cold brew, frappé, etc.)</label>
+      <label class="opcion"><input type="checkbox" name="tipos_cafe" value="Café de filtro (pour over, aeropress, etc.)"> Café de filtro (pour over, aeropress, etc.)</label>
+      <label class="opcion"><input type="checkbox" name="tipos_cafe" value="No tomo café"> No tomo café (prefiero té u otras infusiones)</label>
+    </div>
+    <div class="pregunta">
+      <p>6. ¿Cuánto pagás habitualmente por un café en Resistencia?</p>
+      <label class="opcion"><input type="radio" name="ticket_actual" value="Menos de $1.500"> Menos de $1.500</label>
+      <label class="opcion"><input type="radio" name="ticket_actual" value="Entre $1.500 y $2.500"> Entre $1.500 y $2.500</label>
+      <label class="opcion"><input type="radio" name="ticket_actual" value="Entre $2.500 y $3.500"> Entre $2.500 y $3.500</label>
+      <label class="opcion"><input type="radio" name="ticket_actual" value="Más de $3.500"> Más de $3.500</label>
+    </div>
+  </div>
+
+  <div class="bloque">
+    <div class="bloque-titulo">Café de especialidad</div>
+    <div class="pregunta">
+      <p>7. ¿Sabés qué es el café de especialidad?</p>
+      <label class="opcion"><input type="radio" name="conocimiento_especialidad" value="Sí, lo conozco y lo consumo regularmente"> Sí, lo conozco y lo consumo regularmente</label>
+      <label class="opcion"><input type="radio" name="conocimiento_especialidad" value="Sí, lo conozco pero no lo consumo seguido"> Sí, lo conozco pero no lo consumo seguido</label>
+      <label class="opcion"><input type="radio" name="conocimiento_especialidad" value="Lo escuché pero no sé bien qué es"> Lo escuché mencionar pero no sé bien qué es</label>
+      <label class="opcion"><input type="radio" name="conocimiento_especialidad" value="No, nunca lo escuché"> No, nunca lo escuché</label>
+    </div>
+    <div class="pregunta">
+      <p>8. Si un café de especialidad cuesta entre 40% y 60% más que uno tradicional, ¿lo pagarías si la calidad lo justifica?</p>
+      <label class="opcion"><input type="radio" name="disposicion_pagar_premium" value="Sí, definitivamente"> Sí, definitivamente</label>
+      <label class="opcion"><input type="radio" name="disposicion_pagar_premium" value="Probablemente sí"> Probablemente sí</label>
+      <label class="opcion"><input type="radio" name="disposicion_pagar_premium" value="Me da lo mismo si el lugar me gusta"> Me da lo mismo si el lugar me gusta</label>
+      <label class="opcion"><input type="radio" name="disposicion_pagar_premium" value="Probablemente no"> Probablemente no</label>
+      <label class="opcion"><input type="radio" name="disposicion_pagar_premium" value="No, prefiero pagar menos"> No, prefiero pagar menos</label>
+    </div>
+    <div class="pregunta">
+      <p>9. ¿Qué es lo que más valorás cuando elegís un lugar para tomar un café? (Mencioná 2 o 3 cosas)</p>
+      <textarea name="que_valoras" rows="3" placeholder="Ej: buena onda, wifi, precio cómodo, calidad del café..."></textarea>
+    </div>
+  </div>
+
+  <div class="bloque">
+    <div class="bloque-titulo">Ambiente y espacio</div>
+    <div class="pregunta">
+      <p>10. Si existiera un café cerca del parque, ¿para qué lo usarías principalmente?</p>
+      <label class="opcion"><input type="radio" name="uso_principal" value="Para tomarme un descanso rápido"> Para tomarme un descanso rápido</label>
+      <label class="opcion"><input type="radio" name="uso_principal" value="Para trabajar o estudiar con wifi"> Para trabajar o estudiar con wifi</label>
+      <label class="opcion"><input type="radio" name="uso_principal" value="Para reunirme con amigos o colegas"> Para reunirme con amigos o colegas</label>
+      <label class="opcion"><input type="radio" name="uso_principal" value="Para pasar una tarde relajado/a"> Para pasar una tarde relajado/a</label>
+      <label class="opcion"><input type="radio" name="uso_principal" value="No lo usaría"> No lo usaría</label>
+    </div>
+    <div class="pregunta">
+      <p>11. ¿Qué tipo de ambiente preferís en un café?</p>
+      <label class="opcion"><input type="radio" name="ambiente_preferido" value="Tranquilo y silencioso (para concentrarse)"> Tranquilo y silencioso (para concentrarse)</label>
+      <label class="opcion"><input type="radio" name="ambiente_preferido" value="Animado y social (con música y movimiento)"> Animado y social (con música y movimiento)</label>
+      <label class="opcion"><input type="radio" name="ambiente_preferido" value="Híbrido (zonas para ambos)"> Híbrido (zonas para ambos)</label>
+      <label class="opcion"><input type="radio" name="ambiente_preferido" value="Me da igual si el café es bueno"> Me da igual si el café es bueno</label>
+    </div>
+    <div class="pregunta">
+      <p>12. ¿Qué servicios extra te harían elegir este café? (Elegí hasta 3)</p>
+      <label class="opcion"><input type="checkbox" name="servicios_extra" value="WiFi gratuito"> WiFi gratuito</label>
+      <label class="opcion"><input type="checkbox" name="servicios_extra" value="Enchufes para cargar dispositivos"> Enchufes para cargar dispositivos</label>
+      <label class="opcion"><input type="checkbox" name="servicios_extra" value="Opciones de comida (medialunas, tostados)"> Opciones de comida (medialunas, tostados)</label>
+      <label class="opcion"><input type="checkbox" name="servicios_extra" value="Productos para llevar (café en grano, merch)"> Productos para llevar (café en grano, merch)</label>
+      <label class="opcion"><input type="checkbox" name="servicios_extra" value="Eventos (catas, talleres de café)"> Eventos (catas, talleres de café)</label>
+      <label class="opcion"><input type="checkbox" name="servicios_extra" value="Servicio take away rápido"> Servicio take away rápido</label>
+      <label class="opcion"><input type="checkbox" name="servicios_extra" value="Espacio al aire libre / patio"> Espacio al aire libre / patio</label>
+    </div>
+    <div class="pregunta">
+      <p>13. ¿Hay algo que NO encontrás en los cafés de Resistencia y te gustaría que existiera?</p>
+      <textarea name="que_falta" rows="3" placeholder="Tu respuesta acá..."></textarea>
+    </div>
+  </div>
+
+  <p id="error-msg">Hubo un error al enviar. Intentá de nuevo.</p>
+  <button class="btn" id="btn-enviar" onclick="enviar()">Enviar respuestas →</button>
+</div>
+
+<div class="gracias" id="gracias">
+  <div class="check">✓</div>
+  <h2>¡Muchas gracias!</h2>
+  <p>Tus respuestas fueron registradas. Nos ayudás a entender mejor qué espera la comunidad del Parque de la Democracia.</p>
+</div>
+
+<script>
+const { createClient } = supabase;
+const db = createClient(
+  'https://grtmfhlcsfmvzmtrxugg.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdydG1maGxjc2ZtdnptdHJ4dWdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NTg2MzgsImV4cCI6MjA5MDAzNDYzOH0.BInOLC0LRPGNRF4QqrExDwRbbJQZOHNtg3pFnq-hXdU'
+);
+
+async function enviar() {
+  const btn = document.getElementById('btn-enviar');
+  const errMsg = document.getElementById('error-msg');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+  errMsg.style.display = 'none';
+
+  const payload = {
+    frecuencia_parque: getRadio('frecuencia_parque'),
+    actividades: getChecks('actividades'),
+    horario_visita: getRadio('horario_visita'),
+    frecuencia_cafe_fuera: getRadio('frecuencia_cafe_fuera'),
+    tipos_cafe: getChecks('tipos_cafe'),
+    ticket_actual: getRadio('ticket_actual'),
+    conocimiento_especialidad: getRadio('conocimiento_especialidad'),
+    disposicion_pagar_premium: getRadio('disposicion_pagar_premium'),
+    que_valoras: getText('que_valoras'),
+    uso_principal: getRadio('uso_principal'),
+    ambiente_preferido: getRadio('ambiente_preferido'),
+    servicios_extra: getChecks('servicios_extra'),
+    que_falta: getText('que_falta'),
+  };
+
+  const { error } = await db.from('encuesta_cafe').insert([payload]);
+  if (error) {
+    errMsg.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Enviar respuestas →';
+  } else {
+    document.getElementById('formulario').style.display = 'none';
+    document.getElementById('gracias').style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+}
+
+function getRadio(name) {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : null;
+}
+function getChecks(name) {
+  return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(e => e.value);
+}
+function getText(name) {
+  const el = document.querySelector(`textarea[name="${name}"]`);
+  return el ? el.value.trim() : null;
+}
+</script>
+</body>
+</html>
